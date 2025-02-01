@@ -4,8 +4,8 @@ steps:
   args: [
     'build',
     '-t', 'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360/app-flask',
-    '-f', 'app-flask/Dockerfile',  # 📌 Ruta correcta del Dockerfile
-    'app-flask'  # 📌 Contexto correcto (donde está el código Flask)
+    '-f', 'app-flask-gcp/Dockerfile',  # 📌 Ruta correcta del Dockerfile
+    'app-flask-gcp'  # 📌 Contexto correcto (donde está el código Flask)
   ]
 
 # 2️⃣ Subir la imagen a Artifact Registry
@@ -36,9 +36,9 @@ steps:
       '--region', 'southamerica-east1',
       '--platform', 'managed',
       '--allow-unauthenticated',
-      '--min-instances', '1',  # 📌 Mantiene al menos 1 instancia activa
-      '--memory', '256Mi',  # 📌 Optimización de recursos
-      '--cpu', '0.5'  # 📌 Uso mínimo de CPU
+      '--min-instances', '1',
+      '--memory', '256Mi',
+      '--cpu', '0.5'
     ]
 
 images:
