@@ -332,7 +332,7 @@ body.dark-mode footer {
         const dropdownCalle2 = document.getElementById('dropdown-calle2');
 
         // Cargar las calles en Calle 1
-        fetch('/proxy/api/data/calles')
+        fetch('/api/data/calles')
             .then(response => response.json())
             .then(calles => {
                 calles.forEach(calle => {
@@ -353,10 +353,10 @@ body.dark-mode footer {
 
             if (calle1Id) {
                 // Renderizar nodos de Calle 1
-                nodosCalle1Layer = await cargarNodos(`/proxy/api/data/nodos/${calle1Id}`, 'blue', nodosCalle1Layer);
+                nodosCalle1Layer = await cargarNodos(`/api/data/nodos/${calle1Id}`, 'blue', nodosCalle1Layer);
 
                 // Cargar intersecciones para Calle 2
-                fetch(`/proxy/api/data/intersecciones/${calle1Id}`)
+                fetch(`/api/data/intersecciones/${calle1Id}`)
                     .then(response => response.json())
                     .then(intersecciones => {
                         intersecciones.forEach(calle => {
@@ -378,10 +378,10 @@ body.dark-mode footer {
 
             if (calle1Id && calle2Id) {
                 // Renderizar nodos de Calle 2
-                nodosCalle2Layer = await cargarNodos(`/proxy/api/data/nodos/${calle2Id}`, 'green', nodosCalle2Layer);
+                nodosCalle2Layer = await cargarNodos(`/api/data/nodos/${calle2Id}`, 'green', nodosCalle2Layer);
 
                 // Renderizar nodos de intersección
-                nodosInterseccionLayer = await cargarNodos(`/proxy/api/data/nodos_interseccion/${calle1Id}/${calle2Id}`, 'red', nodosInterseccionLayer, true);
+                nodosInterseccionLayer = await cargarNodos(`/api/data/nodos_interseccion/${calle1Id}/${calle2Id}`, 'red', nodosInterseccionLayer, true);
             }
         });
 
@@ -448,7 +448,7 @@ const suggestionsList = document.getElementById("suggestions");
 async function fetchAutocompleteSuggestions(inputValue) {
     try {
         console.log(`[DEBUG] Enviando solicitud de autocomplete para: ${inputValue}`);
-        const response = await fetch(`/proxy/gmaps?input=${encodeURIComponent(inputValue)}`);
+        const response = await fetch(`/gmaps?input=${encodeURIComponent(inputValue)}`);
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
@@ -485,7 +485,7 @@ input.addEventListener("input", async (event) => {
                 console.log(`[DEBUG] Solicitando detalles para place_id: ${selectedPlace}`);
 
                 try {
-                    const response = await fetch(`/proxy/gmaps/place/details/json?place_id=${selectedPlace}`);
+                    const response = await fetch(`/gmaps/place/details/json?place_id=${selectedPlace}`);
                     if (!response.ok) {
                         throw new Error(`Error HTTP: ${response.status}`);
                     }
