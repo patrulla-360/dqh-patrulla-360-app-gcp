@@ -5,8 +5,8 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copia los archivos de la aplicación
-COPY requirements.txt .
-COPY app/ /app
+COPY app-flask-gcp/requirements.txt .  # 📌 Copia el requirements.txt desde la carpeta correcta
+COPY app-flask-gcp/ /app  # 📌 Copia TODO el contenido de app-flask-gcp
 
 # Instala dependencias
 RUN pip install --no-cache-dir -r requirements.txt
