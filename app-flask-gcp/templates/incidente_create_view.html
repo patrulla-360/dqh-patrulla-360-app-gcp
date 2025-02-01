@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/img/logo_patrulla.png" type="image/png">
+    <title>Generar Incidente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <style>
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #fff;
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.75);
+        }
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #fff;
+        }
+        .dark-icon {
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.75);
+        }
+        .dark-icon:hover {
+            color: #fff;
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        #spinner {
+        display: none;
+    }
+    main.container {
+        margin-bottom: 50px; /* Aumenta este valor para más espacio */
+    }
+    footer {
+    background-color: #f8f9fa; /* Color de fondo claro */
+    color: #000; /* Color del texto claro */
+    padding: 20px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+body.dark-mode footer {
+    background-color: #121212; /* Color de fondo oscuro */
+    color: #fff; /* Color del texto oscuro */
+}
+#dropdown-container {
+    margin-top: 20px;
+}
+#dropdown-container select {
+    margin-top: 10px;
+}
+.blinking {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="/static/img/logo_patrulla.png" alt="Logo">
+                Patrulla360
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Mapa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Incidentes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Identificaciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Objetivos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Reportes</a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link dark-icon" id="darkModeToggle">
+                            <i class="fas fa-moon"></i>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<main class="container mt-5">
+        <h1>Generar Incidente</h1>
+       
+        <form id="incidentForm" method="POST" action="/guardar_incidente" class="container mt-4">
+            <!-- Mapa -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div id="map" style="height: 600px; border: 1px solid #ddd;"></div>
+                    <input type="hidden" id="hiddenLatitude" name="latitude" required>
+                    <input type="hidden" id="hiddenLongitude" name="longitude" required>
+                    <input type="hidden" id="hiddenRadius" name="radius">
+                </div>
+            </div>
+        
+            <!-- Acordeón de búsqueda -->
+            <div class="accordion mb-4" id="accordionBuscar">
+                <!-- Buscar por intersección -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingBuscar">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBuscar" aria-expanded="false" aria-controls="collapseBuscar">
+                            Buscar por intersección
+                        </button>
+                    </h2>
+                    <div id="collapseBuscar" class="accordion-collapse collapse" aria-labelledby="headingBuscar" data-bs-parent="#accordionBuscar">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <!-- Campo para Calle 1 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="dropdown-calle1" class="form-label">Seleccionar Calle 1</label>
+                                    <select id="dropdown-calle1" class="form-select">
+                                        <option value="">Seleccione una opción</option>
+                                        <!-- Opciones dinámicas aquí -->
+                                    </select>
+                                </div>
+                                <!-- Campo para Calle 2 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="dropdown-calle2" class="form-label">Seleccionar Calle 2</label>
+                                    <select id="dropdown-calle2" class="form-select" disabled>
+                                        <option value="">Seleccione una opción</option>
+                                        <!-- Opciones dinámicas aquí -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Buscar por dirección -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingDireccion">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDireccion" aria-expanded="false" aria-controls="collapseDireccion">
+                            Buscar por dirección
+                        </button>
+                    </h2>
+                    <div id="collapseDireccion" class="accordion-collapse collapse" aria-labelledby="headingDireccion" data-bs-parent="#accordionBuscar">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="direccionInput" class="form-label">Ingrese una dirección</label>
+                                <input type="text" id="direccionInput" class="form-control" placeholder="Buscar dirección...">
+                                <ul id="suggestions" class="list-group mt-2"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Campos ocultos -->
+            <div class="row d-none">
+                <div class="col-md-4">
+                    <input type="hidden" id="latitude" class="form-control" readonly required>
+                    <div class="invalid-feedback">Por favor selecciona una latitud válida.</div>
+                </div>
+                <div class="col-md-4">
+                    <input type="hidden" id="longitude" class="form-control" readonly required>
+                    <div class="invalid-feedback">Por favor selecciona una longitud válida.</div>
+                </div>
+                <div class="col-md-4">
+                    <input type="hidden" id="radius" class="form-control" readonly required>
+                    <div class="invalid-feedback">Por favor selecciona un radio válido.</div>
+                </div>
+            </div>
+        
+            <!-- Tipo de Incidente -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="tipoIncidente" class="form-label">Tipo de Incidente</label>
+                    <select id="tipoIncidente" name="tipoIncidente" class="form-select" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="Seguridad Pública">Seguridad Pública</option>
+                        <option value="Emergencia Médica">Emergencia Médica</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+            </div>
+        
+            <!-- Descripción -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="4" placeholder="Añadir detalles del incidente (opcional)"></textarea>
+                </div>
+            </div>
+        
+            <!-- Botón de envío -->
+            <div class="row">
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary">Guardar Incidente</button>
+                    <div id="spinner" class="spinner-border text-primary d-none" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+
+
+
+    </main>
+    <footer>
+        <p>© 2025 Patrulla360 . Todos los derechos reservados.</p>
+    </footer>
+    <!-- Agregar Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkIcon = darkModeToggle.querySelector('i');
+
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                darkIcon.classList.remove('fa-moon');
+                darkIcon.classList.add('fa-sun');
+            } else {
+                darkIcon.classList.remove('fa-sun');
+                darkIcon.classList.add('fa-moon');
+            }
+        });
+    </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Inicializar el mapa
+        const map = L.map('map').setView([-34.5439, -58.7125], 14);
+
+        // Agregar capa base al mapa
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Capas de nodos
+        const drawnItems = new L.FeatureGroup();
+        let nodosCalle1Layer = null;
+        let nodosCalle2Layer = null;
+        let nodosInterseccionLayer = null;
+
+        map.addLayer(drawnItems);
+
+        // Herramientas de dibujo
+        const drawControl = new L.Control.Draw({
+            draw: {
+                polyline: false,
+                polygon: false,
+                rectangle: false,
+                marker: false,
+                circlemarker: false,
+                circle: true,
+            },
+            edit: {
+                featureGroup: drawnItems,
+                edit: false,
+                remove: true,
+            },
+        });
+        map.addControl(drawControl);
+
+        // Cargar archivo GeoJSON y dibujarlo en el mapa
+        fetch('/static/san_miguel.geojson')
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data).addTo(map);
+            })
+            .catch(error => console.error('Error cargando el archivo GeoJSON:', error));
+
+        // Manejar eventos de dibujo
+        map.on(L.Draw.Event.CREATED, function (event) {
+            drawnItems.clearLayers();
+            const layer = event.layer;
+
+            if (event.layerType === 'circle') {
+                const center = layer.getLatLng();
+                const radius = layer.getRadius();
+
+                document.getElementById('hiddenLatitude').value = center.lat.toFixed(6);
+                document.getElementById('hiddenLongitude').value = center.lng.toFixed(6);
+                document.getElementById('hiddenRadius').value = radius.toFixed(2);
+
+                document.getElementById('latitude').value = center.lat.toFixed(6);
+                document.getElementById('longitude').value = center.lng.toFixed(6);
+                document.getElementById('radius').value = radius.toFixed(2);
+            }
+
+            drawnItems.addLayer(layer);
+        });
+
+        map.on(L.Draw.Event.DELETED, function () {
+            document.getElementById('hiddenLatitude').value = '';
+            document.getElementById('hiddenLongitude').value = '';
+            document.getElementById('hiddenRadius').value = '';
+
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('radius').value = '';
+        });
+
+        // Manejo de dropdowns
+        const dropdownCalle1 = document.getElementById('dropdown-calle1');
+        const dropdownCalle2 = document.getElementById('dropdown-calle2');
+
+        // Cargar las calles en Calle 1
+        fetch('/proxy/api/data/calles')
+            .then(response => response.json())
+            .then(calles => {
+                calles.forEach(calle => {
+                    const option = document.createElement('option');
+                    option.value = calle.id;
+                    option.textContent = calle.nombre;
+                    dropdownCalle1.appendChild(option);
+                });
+            });
+
+        // Manejar cambio en Calle 1
+        dropdownCalle1.addEventListener('change', async () => {
+            const calle1Id = dropdownCalle1.value;
+
+            // Reiniciar Calle 2
+            dropdownCalle2.innerHTML = '<option value="">Seleccionar Calle 2</option>';
+            dropdownCalle2.disabled = true;
+
+            if (calle1Id) {
+                // Renderizar nodos de Calle 1
+                nodosCalle1Layer = await cargarNodos(`/proxy/api/data/nodos/${calle1Id}`, 'blue', nodosCalle1Layer);
+
+                // Cargar intersecciones para Calle 2
+                fetch(`/proxy/api/data/intersecciones/${calle1Id}`)
+                    .then(response => response.json())
+                    .then(intersecciones => {
+                        intersecciones.forEach(calle => {
+                            const option = document.createElement('option');
+                            option.value = calle.id;
+                            option.textContent = calle.nombre;
+                            dropdownCalle2.appendChild(option);
+                        });
+
+                        dropdownCalle2.disabled = false;
+                    });
+            }
+        });
+
+        // Manejar cambio en Calle 2
+        dropdownCalle2.addEventListener('change', async () => {
+            const calle1Id = dropdownCalle1.value;
+            const calle2Id = dropdownCalle2.value;
+
+            if (calle1Id && calle2Id) {
+                // Renderizar nodos de Calle 2
+                nodosCalle2Layer = await cargarNodos(`/proxy/api/data/nodos/${calle2Id}`, 'green', nodosCalle2Layer);
+
+                // Renderizar nodos de intersección
+                nodosInterseccionLayer = await cargarNodos(`/proxy/api/data/nodos_interseccion/${calle1Id}/${calle2Id}`, 'red', nodosInterseccionLayer, true);
+            }
+        });
+
+        // Función para cargar nodos y renderizarlos en el mapa
+        async function cargarNodos(apiUrl, color, existingLayer, isBlinking = false) {
+            const response = await fetch(apiUrl);
+            const nodos = await response.json();
+
+            if (existingLayer) {
+                map.removeLayer(existingLayer);
+            }
+
+            const geoJsonData = {
+                type: 'FeatureCollection',
+                features: nodos.map(nodo => ({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [nodo.longitud, nodo.latitud]
+                    },
+                    properties: {
+                        id_nodo: nodo.id_nodo,
+                        calles: nodo.calles
+                    }
+                }))
+            };
+
+            const layer = L.geoJSON(geoJsonData, {
+                pointToLayer: (feature, latlng) => {
+                    const options = {
+                        radius: 8,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.8
+                    };
+
+                    if (isBlinking) {
+                        options.className = 'blinking';
+                    }
+
+                    return L.circleMarker(latlng, options);
+                },
+                onEachFeature: (feature, layer) => {
+                    layer.bindPopup(`Nodo ID: ${feature.properties.id_nodo}<br>Calles: ${feature.properties.calles}`);
+                }
+            });
+
+            layer.addTo(map);
+
+            // Centrar el mapa en los nodos de la calle
+            if (nodos.length > 0) {
+                const bounds = L.latLngBounds(nodos.map(nodo => [nodo.latitud, nodo.longitud]));
+                map.fitBounds(bounds);
+            }
+
+            return layer;
+        }
+
+       // ---- Autocomplete Integration ----
+       const input = document.getElementById("direccionInput");
+const suggestionsList = document.getElementById("suggestions");
+
+// Obtener sugerencias de autocompletado
+async function fetchAutocompleteSuggestions(inputValue) {
+    try {
+        console.log(`[DEBUG] Enviando solicitud de autocomplete para: ${inputValue}`);
+        const response = await fetch(`/proxy/gmaps?input=${encodeURIComponent(inputValue)}`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(`[DEBUG] Respuesta de autocomplete:`, data);
+        return data.predictions || [];
+    } catch (error) {
+        console.error("[ERROR] Error fetching autocomplete suggestions:", error);
+        return [];
+    }
+}
+
+// Manejo de evento de entrada
+input.addEventListener("input", async (event) => {
+    const inputValue = event.target.value;
+
+    if (inputValue.length > 2) {
+        console.log(`[DEBUG] Input detectado: ${inputValue}`);
+        const suggestions = await fetchAutocompleteSuggestions(inputValue);
+        suggestionsList.innerHTML = ""; // Limpiar las sugerencias anteriores
+
+        suggestions.forEach((suggestion) => {
+            console.log(`[DEBUG] Mostrando sugerencia: ${suggestion.description}`);
+            const listItem = document.createElement("li");
+            listItem.textContent = suggestion.description;
+            listItem.classList.add("list-group-item");
+
+            listItem.addEventListener("click", async () => {
+                console.log(`[DEBUG] Sugerencia seleccionada: ${suggestion.description}`);
+                input.value = suggestion.description;
+                suggestionsList.innerHTML = "";
+
+                const selectedPlace = suggestion.place_id;
+                console.log(`[DEBUG] Solicitando detalles para place_id: ${selectedPlace}`);
+
+                try {
+                    const response = await fetch(`/proxy/gmaps/place/details/json?place_id=${selectedPlace}`);
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log(`[DEBUG] Respuesta de detalles del lugar:`, data);
+
+                    if (data.result && data.result.geometry) {
+                        const location = data.result.geometry.location;
+                        console.log(`[DEBUG] Ubicación del lugar: lat=${location.lat}, lng=${location.lng}`);
+                        const marker = L.marker([location.lat, location.lng]).addTo(map);
+                        map.setView([location.lat, location.lng], 16);
+                    } else {
+                        console.error("[ERROR] No se encontraron detalles de ubicación en la respuesta.");
+                    }
+                } catch (error) {
+                    console.error("[ERROR] Error obteniendo detalles del lugar:", error);
+                }
+            });
+
+            suggestionsList.appendChild(listItem);
+        });
+    } else {
+        console.log("[DEBUG] Input demasiado corto, limpiando sugerencias.");
+        suggestionsList.innerHTML = ""; // Limpiar si el texto es muy corto
+    }
+});
+
+
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

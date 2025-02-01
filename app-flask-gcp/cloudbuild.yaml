@@ -1,0 +1,48 @@
+steps:
+# 1️⃣ Construir la imagen Docker
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360/app-flask',
+    '-f', 'Dockerfile',
+    '.'
+  ]
+
+# 2️⃣ Subir la imagen a Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360/app-flask']
+
+# 3️⃣ Verificar acceso al repositorio
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'artifacts', 'repositories', 'describe',
+    'dqh-artifact-registry-patrulla-360',
+    '--location=southamerica-east1'
+  ]
+
+# 4️⃣ Listar imágenes en el repositorio (Opcional)
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+    'artifacts', 'docker', 'images', 'list',
+    'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360'
+  ]
+
+# 5️⃣ Desplegar en Cloud Run con instancia mínima activa
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    [
+      'run', 'deploy', 'app-flask',
+      '--image', 'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360/app-flask',
+      '--region', 'southamerica-east1',
+      '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--min-instances', '1',  # Mantiene una instancia activa
+      '--memory', '256Mi',  # Reduce consumo de RAM
+      '--cpu', '0.5',  # Reduce consumo de CPU
+    ]
+
+images:
+- 'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360/app-flask'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

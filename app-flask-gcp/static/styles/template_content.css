@@ -1,0 +1,268 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body.light {
+    background-color: #f5f5f5;
+    color: black;
+}
+
+body.dark {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-gap: 15px;
+    height: 100vh;
+    padding: 20px;
+}
+
+.parent > div {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    flex-direction: column;
+}
+
+/* Estilos de modo claro/oscuro */
+body.light .parent > div {
+    background-color: #fff;
+    color: black;
+}
+
+body.dark .parent > div {
+    background-color: #2b2b2b;
+    color: white;
+}
+.div1 {
+grid-area: 1 / 1 / 6 / 2;
+display: flex;
+flex-direction: column;
+justify-content: flex-start; /* Alinea hacia el inicio */
+padding: 20px;
+background-color: #2b2b2b;
+border-radius: 15px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+align-items: center; /* Centra horizontalmente */
+}
+
+.logo-container {
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center; /* Centrar el logo */
+margin-bottom: 40%; /* Espaciado entre logo y secciones */
+}
+.sections-container {
+display: flex;
+flex-direction: column;
+align-items: flex-start; /* Alinear las secciones a la izquierda */
+flex-grow: 1;
+justify-content: center;
+width: 100%; /* Asegurarse de que el contenedor ocupe todo el ancho */
+}
+
+/* Sidebar sections light/dark mode */
+body.light .sidebar-section {
+background-color: #fff;
+color: black;
+}
+
+body.dark .sidebar-section {
+background-color: #2b2b2b;
+color: white;
+}
+
+/* Secciones clicables alineadas a la izquierda */
+.sidebar-section {
+width: 100%;  
+text-align: left;  /* Alinear texto a la izquierda */
+padding: 15px 10px;   /* Espaciado interno más amplio */
+font-size: 1.4rem;    /* Aumentar tamaño de la fuente */
+cursor: pointer;
+transition: background-color 0.3s ease;
+position: relative;
+/* Not setting background-color and color here, as they are controlled by body class */
+}
+
+/* Línea divisoria minimalista */
+.sidebar-section::after {
+content: '';
+position: absolute;
+bottom: 0;
+left: 10px; /* Espaciado desde el borde izquierdo */
+width: calc(100% - 20px); /* Longitud de la línea ajustada */
+height: 1px;
+background-color: rgba(255, 255, 255, 0.2); /* Color minimalista */
+}
+
+/* Hover effect */
+body.light .sidebar-section:hover {
+background-color: rgba(0, 0, 0, 0.1); /* Efecto hover para modo claro */
+}
+
+body.dark .sidebar-section:hover {
+background-color: rgba(255, 255, 255, 0.1); /* Efecto hover para modo oscuro */
+}
+
+/* Línea divisoria minimalista para ambos modos */
+body.light .sidebar-section::after {
+background-color: rgba(0, 0, 0, 0.1); /* Línea divisoria más oscura para modo claro */
+}
+
+body.dark .sidebar-section::after {
+background-color: rgba(255, 255, 255, 0.2); /* Línea divisoria más clara para modo oscuro */
+}
+
+
+/* Botones de abajo */
+.bottom-buttons {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 10px;
+width: 100%;
+padding-top: 10px;
+border-top: 1px solid #444;
+}
+
+/* Ajustes de los botones */
+.toggle-button, .settings-button {
+background-color: transparent;
+border: 2px solid currentColor;
+border-radius: 30px;
+font-size: 1.5rem;
+padding: 15px 20px;
+cursor: pointer;
+transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.toggle-button.dark, .settings-button.dark {
+color: #fff;
+border-color: #fff;
+}
+
+
+
+
+/* Logo centrado y pegado al top */
+.logo-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: auto;
+}
+
+.logo-container img {
+    max-width: 50%;
+    height: auto;
+    padding-top: 20%;
+}
+
+
+.div_content { grid-area: 1 / 2 / 6 / 6; }
+
+
+/* Botones optimizados para tacto */
+/* Ajuste de los botones */
+/* Botones con fondo azul */
+.button {
+    background-color: #007bff; /* Fondo azul */
+    color: white; /* Texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 18px; /* Bordes redondeados */
+    font-size: 1rem; /* Reduce el tamaño de la fuente */
+    padding: 20px 26px; /* Reduce el padding */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    touch-action: manipulation;
+    outline: none; /* Elimina el borde negro */
+}
+
+
+/* Botones en modo claro */
+.button.light {
+background-color: #007bff; /* Fondo azul para modo claro */
+color: white;
+border: none; /* Sin borde */
+outline: none; /* Elimina el borde negro */
+}
+
+/* Botones en modo oscuro */
+.button.dark {
+background-color: #007bff; /* Fondo azul para modo oscuro */
+color: white;
+border: none; /* Sin borde */
+outline: none; /* Elimina el borde negro */
+}
+
+/* Efecto cuando se presiona */
+.button:active {
+background-color: #0056b3; /* Fondo más oscuro cuando se hace clic */
+transform: scale(0.98); /* Simulación de presión */
+outline: none; /* Elimina el borde negro al hacer clic */
+}
+
+.boton-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.boton-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Botones de abajo */
+.bottom-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    }
+
+/* Botones de modo oscuro/claro y configuración */
+.toggle-button, .settings-button {
+    background-color: transparent;
+    border: 2px solid currentColor;
+    border-radius: 30px;
+    font-size: 1.5rem;
+    padding: 15px 25px;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.toggle-button.light, .settings-button.light {
+    color: #000;
+    border-color: #000;
+}
+
+.toggle-button.dark, .settings-button.dark {
+    color: #fff;
+    border-color: #fff;
+}
+
+/* Simulación de tacto en botones */
+.toggle-button:active, .settings-button:active {
+    background-color: rgba(0, 0, 0, 0.2);
+    transform: scale(0.98);
+}
+
+

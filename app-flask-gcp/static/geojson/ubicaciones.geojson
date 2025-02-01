@@ -1,0 +1,94 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Vehículo 522",
+          "icon": "static/icono_movil_522.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.7172, -34.5303]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Vehículo 411",
+          "icon": "static/icono_movil_411.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.7171, -34.5560]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Vehículo 531",
+          "icon": "static/icono_movil_531.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.7021, -34.5331]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Vehículo A21",
+          "icon": "static/icono_movil_A21.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.6943, -34.5441]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Incidente Armas",
+          "icon": "static/icono_armas.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.7185, -34.5362]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Incidente Accidente",
+          "icon": "static/icono_accidente.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.7108, -34.5363]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Incidente Médico",
+          "icon": "static/icono_medico.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.6993, -34.5403]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "Incidente Desconocido",
+          "icon": "static/icono_desconocido.png"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-58.7121, -34.5477]
+        }
+      }
+    ]
+  }
+  
