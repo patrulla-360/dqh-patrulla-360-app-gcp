@@ -5,14 +5,12 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copia los archivos de la aplicación
-COPY app-flask-gcp/requirements.txt .  # 📌 Copia el requirements.txt desde la carpeta correcta
-COPY app-flask-gcp/ /app  # 📌 Copia TODO el contenido de app-flask-gcp
+COPY . /app
 
-# Instala dependencias
-RUN pip install --no-cache-dir -r requirements.txt
+# Instala las dependencias
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Expone el puerto 8080 necesario para Cloud Run
-EXPOSE 8080
 
 # Define el comando de ejecución con Gunicorn
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8080", "main:app"]
