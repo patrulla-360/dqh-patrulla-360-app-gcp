@@ -1,11 +1,11 @@
 steps:
-# 1️⃣ Construcción de la imagen Docker desde el subdirectorio correcto
+# 1️⃣ Construcción de la imagen Docker desde la carpeta correcta
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
     '-t', 'southamerica-east1-docker.pkg.dev/dqh-patrulla-360/dqh-artifact-registry-patrulla-360/app-flask',
-    '-f', 'app-flask-gcp/Dockerfile',  # 📌 Ruta correcta del Dockerfile
-    'app-flask-gcp'  # 📌 Contexto correcto (donde está el código Flask)
+    '-f', 'app-flask-gcp/Dockerfile',  # 📌 Ruta correcta al Dockerfile
+    'app-flask-gcp'  # 📌 Contexto del build → donde está el código Flask
   ]
 
 # 2️⃣ Subir la imagen a Artifact Registry
