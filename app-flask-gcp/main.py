@@ -6,11 +6,47 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 
-@app.route('/')
+@app.route('/incidente_create_view')
 def render_generar_incidentes():
     return render_template('incidente_create_view.html')
 
+CLOUD_RUN_API_URL = "https://gateway-incidente-create-5s8gqz3e.ue.gateway.dev/api/incidente_create"
 
+
+
+@app.route('/incidente_create', methods=['POST'])
+def incidente_create():
+    """
+    Recibe los datos del formulario HTML y los reenvía a la API de Cloud Run.
+    """
+    try:
+        data = request.json  # Recibe los datos en formato JSON desde el frontend
+
+        # Enviar la petición a Cloud Run
+        response = requests.post(CLOUD_RUN_API_URL, json=data, headers={"Content-Type": "application/json"})
+
+        # Obtener la respuesta de la API
+        response_data = response.json()
+
+        if response.status_code == 201 or response.status_code == 200:
+            return jsonify({"message": "Incidente enviado con éxito", "id": response_data.get("id")})
+        else:
+            return jsonify({"error": response_data}), response.status_code
+
+    except Exception as e:
+        return jsonify({"error": f"Error al conectar con Cloud Run: {str(e)}"}), 500
+
+
+
+
+
+
+
+
+
+
+
+#########################################################################
 
 
 # Inicializa el cliente de Google Maps

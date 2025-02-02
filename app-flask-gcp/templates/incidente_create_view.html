@@ -112,7 +112,7 @@ body.dark-mode footer {
 <main class="container mt-5">
         <h1>Generar Incidente</h1>
        
-        <form id="incidentForm" method="POST" action="/guardar_incidente" class="container mt-4">
+        <form id="incidentForm" method="POST" class="container mt-4">
             <!-- Mapa -->
             <div class="row mb-4">
                 <div class="col-12">
@@ -223,6 +223,7 @@ body.dark-mode footer {
             </div>
         </form>
         
+
 
 
 
@@ -517,7 +518,55 @@ input.addEventListener("input", async (event) => {
     });
 </script>
 
-
+<script>
+    document.getElementById("incidentForm").addEventListener("submit", async function(event) {
+        event.preventDefault();  // Evitar recarga de la página
+    
+        // Mostrar spinner
+        document.getElementById("spinner").classList.remove("d-none");
+    
+        // Obtener el texto seleccionado en el dropdown (Ej: "Seguridad Pública", "Emergencia Médica")
+        const tipoIncidenteElement = document.getElementById("tipoIncidente");
+        const tipoIncidenteTexto = tipoIncidenteElement.options[tipoIncidenteElement.selectedIndex].text; 
+    
+        // Capturar valores del formulario
+        const data = {
+            d_tipo_incidente_id: tipoIncidenteTexto,  // ✅ Enviar el texto en lugar del ID
+            latitude: parseFloat(document.getElementById("hiddenLatitude").value),
+            longitude: parseFloat(document.getElementById("hiddenLongitude").value),
+            radius: parseFloat(document.getElementById("hiddenRadius").value) || 50,
+            iniciada_por: "Operador1",
+            descripcion: document.getElementById("descripcion").value.trim() || "Sin descripción"
+        };
+    
+        console.log("Enviando datos al backend Flask:", data);
+    
+        try {
+            const response = await fetch("/incidente_create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+    
+            const result = await response.json();
+            console.log("Respuesta del backend Flask:", result);
+    
+            if (response.ok) {
+                alert("✅ Incidente enviado con éxito: ID " + result.id);
+            } else {
+                alert("❌ Error al guardar el incidente: " + (result.error || result.detail));
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("⚠️ Ocurrió un error inesperado.");
+        } finally {
+            document.getElementById("spinner").classList.add("d-none");
+        }
+    });
+    </script>
+    
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
