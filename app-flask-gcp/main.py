@@ -174,9 +174,10 @@ def login():
             if token:
                 # Guardar token y preferencias en cookies seguras
                 resp = make_response(redirect("/"))
-                resp.set_cookie("jwt_token", token, httponly=False, secure=True, samesite="Lax")
-                resp.set_cookie("rol", rol, secure=True, samesite="Lax")
-                resp.set_cookie("background", background, secure=True, samesite="Lax")
+                resp.set_cookie("jwt_token", token, httponly=False, secure=False, samesite="Lax"
+                                )
+                resp.set_cookie("rol", rol, secure=False, samesite="Lax")
+                resp.set_cookie("background", background, secure=False, samesite="Lax")
                 return resp
             else:
                 return render_template("login.html", error="Invalid response from server")
