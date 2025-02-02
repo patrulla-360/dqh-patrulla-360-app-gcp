@@ -129,7 +129,7 @@ def login():
             if token:
                 # Guardar token y preferencias en cookies seguras
                 resp = make_response(redirect("/"))
-                resp.set_cookie("jwt_token", token, httponly=True, secure=True, samesite="Lax")
+                resp.set_cookie("jwt_token", token, httponly=True, secure=True, samesite="Strict")
                 resp.set_cookie("rol", rol, secure=True, samesite="Lax")
                 resp.set_cookie("background", background, secure=True, samesite="Lax")
                 return resp
