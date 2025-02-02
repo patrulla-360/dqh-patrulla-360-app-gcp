@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, g
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, g,make_response
 import requests
 import googlemaps
 
@@ -101,6 +101,43 @@ def proxy_gmaps_place_details():
 
 
 
+
+
+
+
+
+
+AUTH_API_URL = "https://auth-login-453282587690.southamerica-east1.run.app/api/auth/login"
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        # Enviar credenciales a la API de autenticación
+        response = requests.post(AUTH_API_URL, json={"email": email, "password": password})
+        
+        if response.status_code == 200:
+            data = response.json()
+            token = data.get("token")
+            rol = data.get("rol")
+            background = data.get("background_color_prefered")
+
+            if token:
+                # Guardar token y preferencias en cookies seguras
+                resp = make_response(redirect(url_for('home')))
+                resp.set_cookie("jwt_token", token, httponly=True, secure=True, samesite="Lax")
+                resp.set_cookie("rol", rol, secure=True, samesite="Lax")
+                resp.set_cookie("background", background, secure=True, samesite="Lax")
+                return resp
+            else:
+                return render_template("login.html", error="Invalid response from server")
+
+        return render_template("login.html", error="Invalid email or password")
+
+    return render_template("login.html")
 
 
 
