@@ -107,6 +107,7 @@ def proxy_gmaps_place_details():
 
 
 
+
 AUTH_API_URL = "https://auth-login-453282587690.southamerica-east1.run.app/api/auth/login"
 
 
@@ -127,7 +128,7 @@ def login():
 
             if token:
                 # Guardar token y preferencias en cookies seguras
-                resp = make_response(redirect(url_for('home')))
+                resp = make_response(redirect("/"))
                 resp.set_cookie("jwt_token", token, httponly=True, secure=True, samesite="Lax")
                 resp.set_cookie("rol", rol, secure=True, samesite="Lax")
                 resp.set_cookie("background", background, secure=True, samesite="Lax")
@@ -138,6 +139,7 @@ def login():
         return render_template("login.html", error="Invalid email or password")
 
     return render_template("login.html")
+
 
 
 
