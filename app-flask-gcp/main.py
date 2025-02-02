@@ -17,26 +17,35 @@ CLOUD_RUN_API_URL = "https://gateway-incidente-create-5s8gqz3e.ue.gateway.dev/ap
 @app.route('/incidente_create', methods=['POST'])
 def incidente_create():
     """
-    Recibe los datos del formulario HTML y los reenvía a la API de Cloud Run.
+    Recibe los datos del formulario HTML y los reenvía a la API de Cloud Run, 
+    incluyendo la cookie segura `jwt_token` en la cabecera Authorization.
     """
     try:
         data = request.json  # Recibe los datos en formato JSON desde el frontend
+        jwt_token = request.headers.get("Authorization")  # Captura el token de la cabecera
+        
+        if not jwt_token:
+            return jsonify({"error": "No autorizado. Falta el token JWT"}), 401
 
-        # Enviar la petición a Cloud Run
-        response = requests.post(CLOUD_RUN_API_URL, json=data, headers={"Content-Type": "application/json"})
+        # Enviar la petición a Cloud Run con el token JWT
+        response = requests.post(
+            CLOUD_RUN_API_URL,
+            json=data,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": jwt_token  # Pasar el token al backend
+            }
+        )
 
-        # Obtener la respuesta de la API
         response_data = response.json()
 
-        if response.status_code == 201 or response.status_code == 200:
+        if response.status_code in [200, 201]:
             return jsonify({"message": "Incidente enviado con éxito", "id": response_data.get("id")})
         else:
             return jsonify({"error": response_data}), response.status_code
 
     except Exception as e:
         return jsonify({"error": f"Error al conectar con Cloud Run: {str(e)}"}), 500
-
-
 
 
 
